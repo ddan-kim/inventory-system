@@ -11,20 +11,20 @@ import java.time.LocalDateTime;
 public class ProductResponse {
 
     private Long id;
-    private String code;
     private String name;
     private Long quantity;
+    private String statusDescription;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
     public static ProductResponse from(Product product) {
         return new ProductResponse(
-                product.getId(),
-                product.getCode(),
-                product.getName(),
-                product.getQuantity(),
-                product.getCreatedAt(),
-                product.getUpdatedAt()
+            product.getId(),
+            product.getName(),
+            product.getQuantity(),
+            product.getStatus().getDescription(),
+            product.getCreatedAt(),
+            product.getUpdatedAt()
         );
     }
 }

@@ -8,15 +8,11 @@ import lombok.Getter;
 public class InboundResponse {
 
     private Long productId;
-    private String productCode;
     private String productName;
-    private Long inboundQuantity;
-    private Long previousQuantity;
-    private Long currentQuantity;
+    private Long quantity;
     private boolean newProduct;
 
-    public static InboundResponse of(Long productId, String productCode, String productName, Long inboundQuantity, Long previousQuantity, Long currentQuantity, boolean newProduct) {
-        return new InboundResponse(productId, productCode, productName, inboundQuantity,
-            previousQuantity, currentQuantity, newProduct);
+    public static InboundResponse of(Long productId, String productName, Long quantity, boolean newProduct) {
+        return new InboundResponse(productId, productName, quantity, newProduct);
     }
 }
