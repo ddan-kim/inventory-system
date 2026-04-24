@@ -1,0 +1,5 @@
+rootProject.name = 'inventory-system'
+
+include 'inventory-domain'
+include 'inventory-core'
+include 'inventory-api'
