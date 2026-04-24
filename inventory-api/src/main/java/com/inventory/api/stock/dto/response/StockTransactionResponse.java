@@ -21,16 +21,16 @@ public class StockTransactionResponse {
     private String memo;
     private LocalDateTime createdAt;
 
-    public static StockTransactionResponse from(StockTransaction transaction) {
+    public static StockTransactionResponse of(StockTransaction transaction, String productName) {
         return new StockTransactionResponse(
-                transaction.getId(),
-                transaction.getProduct().getId(),
-                transaction.getProduct().getName(),
-                transaction.getType(),
-                transaction.getType().getDescription(),
-                transaction.getQuantity(),
-                transaction.getMemo(),
-                transaction.getCreatedAt()
+            transaction.getId(),
+            transaction.getProductId(),
+            productName,
+            transaction.getType(),
+            transaction.getType().getDescription(),
+            transaction.getQuantity(),
+            transaction.getMemo(),
+            transaction.getCreatedAt()
         );
     }
 }

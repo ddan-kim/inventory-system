@@ -24,9 +24,8 @@ public class StockTransaction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id", nullable = false)
-    private Product product;
+    @Column(name = "product_id")
+    private Long productId;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
@@ -43,28 +42,42 @@ public class StockTransaction {
     private LocalDateTime createdAt;
 
     @Builder
-    private StockTransaction(Product product, TransactionType type, Long quantity, String memo) {
-        this.product = product;
+    private StockTransaction(Long productId, TransactionType type, Long quantity, String memo) {
+        validateProductId(productId);
+        validateQuantity(quantity);
+        this.productId = productId;
         this.type = type;
         this.quantity = quantity;
         this.memo = memo;
     }
 
-    public static StockTransaction createInbound(Product product, Long quantity, String memo) {
+    public static StockTransaction createInbound(Long productId, Long quantity, String memo) {
         return StockTransaction.builder()
-            .product(product)
+            .productId(productId)
             .type(TransactionType.INBOUND)
             .quantity(quantity)
             .memo(memo)
             .build();
     }
 
-    public static StockTransaction createOutbound(Product product, Long quantity, String memo) {
+    public static StockTransaction createOutbound(Long productId, Long quantity, String memo) {
         return StockTransaction.builder()
-            .product(product)
+            .productId(productId)
             .type(TransactionType.OUTBOUND)
             .quantity(quantity)
             .memo(memo)
             .build();
+    }
+
+    private void validateProductId(Long productId) {
+        if (productId == null) {
+            throw new IllegalArgumentException("상품 ID는 필수입니다.");
+        }
+    }
+
+    private void validateQuantity(Long quantity) {
+        if (quantity == null || quantity <= 0) {
+            throw new IllegalArgumentException("수량은 1 이상이어야 합니다.");
+        }
     }
 }
