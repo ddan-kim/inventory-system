@@ -39,6 +39,7 @@ public class Category {
 
 	@Builder
 	private Category(String name) {
+		validateName(name);
 		this.name = name;
 	}
 
@@ -46,5 +47,16 @@ public class Category {
 		return Category.builder()
 			.name(name)
 			.build();
+	}
+
+	public void updateName(String name) {
+		validateName(name);
+		this.name = name;
+	}
+
+	private void validateName(String name) {
+		if (name == null || name.isBlank()) {
+			throw new IllegalArgumentException("카테고리명은 필수입니다.");
+		}
 	}
 }
