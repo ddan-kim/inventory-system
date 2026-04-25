@@ -34,19 +34,23 @@ public class StockService {
 	 */
 	@Transactional
 	public InboundResponse inbound(InboundRequest request) {
-		Product product = productRepository.findByIdForUpdate(request.getProductId()).orElse(null);
-
-		boolean isNewProduct = (product == null);
+		Product product;
+		boolean isNewProduct = false;
 		Long previousQuantity;
 
-		if (isNewProduct) {
-			product = Product.create(request.getName(), request.getQuantity());
-			product = productRepository.save(product);
-			log.info("신규 상품 등록 및 입고: name={}, quantity={}", product.getName(), product.getQuantity());
-		} else {
+		if (request.getProductId() != null) {
+			product = productRepository.findByIdForUpdate(request.getProductId())
+				.orElseThrow(() -> new InventorySystemException(ErrorCode.PRODUCT_NOT_FOUND, "상품을 찾을 수 없습니다. ID: " + request.getProductId()));
 			previousQuantity = product.getQuantity();
 			product.increaseStock(request.getQuantity());
+
 			log.info("입고 처리: productId={}, name={}, quantity={} -> {}", product.getId(), product.getName(), previousQuantity, product.getQuantity());
+		} else {
+			product = Product.create(request.getName(), request.getQuantity());
+			product = productRepository.save(product);
+			isNewProduct = true;
+
+			log.info("신규 상품 등록 및 입고: name={}, quantity={}", product.getName(), product.getQuantity());
 		}
 
 		StockTransaction transaction = StockTransaction.createInbound(product.getId(), request.getQuantity(), request.getMemo());
@@ -69,8 +73,7 @@ public class StockService {
 	@Transactional
 	public OutboundResponse outbound(OutboundRequest request) {
 		Product product = productRepository.findByIdForUpdate(request.getProductId())
-			.orElseThrow(() -> new InventorySystemException(ErrorCode.PRODUCT_NOT_FOUND,
-				"상품을 찾을 수 없습니다. ID: " + request.getProductId()));
+			.orElseThrow(() -> new InventorySystemException(ErrorCode.PRODUCT_NOT_FOUND, "상품을 찾을 수 없습니다. ID: " + request.getProductId()));
 
 		Long previousQuantity = product.getQuantity();
 		product.decreaseStock(request.getQuantity());
@@ -87,12 +90,6 @@ public class StockService {
 			previousQuantity,
 			product.getQuantity()
 		);
-	}
-
-	@Transactional(readOnly = true)
-	public ProductResponse getStock(Long productId) {
-		Product product = productRepository.findById(productId).orElseThrow(() -> new InventorySystemException(ErrorCode.PRODUCT_NOT_FOUND, "상품을 찾을 수 없습니다. ID: " + productId));
-		return ProductResponse.from(product);
 	}
 
 }

@@ -14,7 +14,6 @@ public class OutboundResponse {
     private Long currentQuantity;
 
     public static OutboundResponse of(Long productId, String productName, Long outboundQuantity, Long previousQuantity, Long currentQuantity) {
-        return new OutboundResponse(productId, productName, outboundQuantity,
-                previousQuantity, currentQuantity);
+        return new OutboundResponse(productId, productName, outboundQuantity, previousQuantity, currentQuantity);
     }
 }
