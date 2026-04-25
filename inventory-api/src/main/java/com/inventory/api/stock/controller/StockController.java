@@ -44,11 +44,4 @@ public class StockController {
 		return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.ok("출고 처리가 완료되었습니다.", response));
 	}
 
-	@Operation(summary = "상품별 재고 조회", description = "상품의 현재 재고 수량을 확인합니다.")
-	@GetMapping("/{productId}/stock")
-	public ResponseEntity<ApiResponse<ProductResponse>> getStock(@Parameter(description = "상품 ID") @PathVariable Long productId) {
-		ProductResponse response = stockService.getStock(productId);
-		return ResponseEntity.ok(ApiResponse.ok(response));
-	}
-
 }
