@@ -1,19 +1,22 @@
 package com.inventory.api.stock.service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.inventory.api.product.dto.response.ProductResponse;
 import com.inventory.api.product.repository.ProductRepository;
 import com.inventory.api.stock.dto.request.InboundRequest;
 import com.inventory.api.stock.dto.request.OutboundRequest;
 import com.inventory.api.stock.dto.response.InboundResponse;
 import com.inventory.api.stock.dto.response.OutboundResponse;
+import com.inventory.api.stock.dto.response.StockTransactionResponse;
 import com.inventory.api.stock.repository.StockTransactionRepository;
 import com.inventory.core.exception.ErrorCode;
 import com.inventory.core.exception.InventorySystemException;
 import com.inventory.domain.product.entity.Product;
 import com.inventory.domain.stock.entity.StockTransaction;
+import com.inventory.domain.stock.enums.TransactionType;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -90,6 +93,29 @@ public class StockService {
 			previousQuantity,
 			product.getQuantity()
 		);
+	}
+
+	/**
+	 * 입출고 이력 조회
+	 *
+	 * @param productId 상품 ID
+	 * @param type
+	 * @param pageable
+	 * @return
+	 */
+	@Transactional(readOnly = true)
+	public Page<StockTransactionResponse> getTransactions(Long productId, TransactionType type, Pageable pageable) {
+		Product product = productRepository.findById(productId)
+			.orElseThrow(() -> new InventorySystemException(ErrorCode.PRODUCT_NOT_FOUND, "상품을 찾을 수 없습니다. ID: " + productId));
+
+		Page<StockTransaction> transactions;
+		if (type != null) {
+			transactions = stockTransactionRepository.findByProductIdAndTypeOrderByCreatedAtDesc(productId, type, pageable);
+		} else {
+			transactions = stockTransactionRepository.findByProductIdOrderByCreatedAtDesc(productId, pageable);
+		}
+
+		return transactions.map(t -> StockTransactionResponse.of(t, product.getName()));
 	}
 
 }

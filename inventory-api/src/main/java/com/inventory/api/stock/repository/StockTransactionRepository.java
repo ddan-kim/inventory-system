@@ -10,4 +10,8 @@ import com.inventory.domain.stock.entity.StockTransaction;
 import com.inventory.domain.stock.enums.TransactionType;
 
 public interface StockTransactionRepository extends JpaRepository<StockTransaction, Long> {
+
+	Page<StockTransaction> findByProductIdOrderByCreatedAtDesc(Long productId, Pageable pageable);
+
+	Page<StockTransaction> findByProductIdAndTypeOrderByCreatedAtDesc(Long productId, TransactionType type, Pageable pageable);
 }

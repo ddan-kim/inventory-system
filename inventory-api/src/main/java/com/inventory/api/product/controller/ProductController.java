@@ -6,13 +6,15 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.inventory.api.product.dto.request.ProductSearchRequest;
 import com.inventory.api.product.dto.response.ProductResponse;
 import com.inventory.api.product.service.ProductService;
-import com.inventory.core.response.ApiResponse;
+import com.inventory.core.common.ApiResponse;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -34,7 +36,7 @@ public class ProductController {
 
 	@Operation(summary = "전체 상품 재고 목록 조회", description = "등록된 전체 상품의 재고 수량을 조회합니다.")
 	@GetMapping
-	public ResponseEntity<ApiResponse<Page<ProductResponse>>> getAllProducts(@PageableDefault(size = 20, sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
-		return ResponseEntity.ok(ApiResponse.ok(productService.getAllProducts(pageable)));
+	public ResponseEntity<ApiResponse<Page<ProductResponse>>> getAllProducts(@ModelAttribute ProductSearchRequest searchRequest) {
+		return ResponseEntity.ok(ApiResponse.ok(productService.getAllProducts(searchRequest.toPageable())));
 	}
 }
