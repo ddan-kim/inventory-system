@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import com.inventory.core.exception.ErrorCode;
+import com.inventory.core.exception.InventorySystemException;
 import com.inventory.domain.common.entity.BaseEntity;
 import com.inventory.domain.product.enums.ProductStatus;
 
@@ -77,9 +79,7 @@ public class Product extends BaseEntity {
         validatePositive(amount);
 
         if (this.quantity < amount) {
-            throw new IllegalStateException(
-                String.format("재고가 부족합니다. 현재 재고: %d, 요청 수량: %d", this.quantity, amount)
-            );
+            throw new InventorySystemException(ErrorCode.STOCK_NOT_ENOUGH);
         }
 
         this.quantity -= amount;
@@ -94,19 +94,19 @@ public class Product extends BaseEntity {
 
     private void validateName(String name) {
         if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("상품명은 필수입니다.");
+            throw new InventorySystemException(ErrorCode.PRODUCT_INVALID_NAME);
         }
     }
 
     private void validateQuantity(Long quantity) {
         if (quantity != null && quantity < 0) {
-            throw new IllegalArgumentException("수량은 0 이상이어야 합니다. 입력값: " + quantity);
+            throw new InventorySystemException(ErrorCode.STOCK_INVALID_QUANTITY);
         }
     }
 
     private void validatePositive(Long amount) {
         if (amount == null || amount <= 0) {
-            throw new IllegalArgumentException("수량은 1 이상이어야 합니다. 입력값: " + amount);
+            throw new InventorySystemException(ErrorCode.STOCK_INVALID_AMOUNT);
         }
     }
 }
