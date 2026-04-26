@@ -1,18 +1,12 @@
 package com.inventory.api.stock.controller;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.inventory.api.stock.dto.request.InboundRequest;
@@ -23,10 +17,9 @@ import com.inventory.api.stock.dto.response.OutboundResponse;
 import com.inventory.api.stock.dto.response.StockTransactionResponse;
 import com.inventory.api.stock.service.StockService;
 import com.inventory.core.common.ApiResponse;
-import com.inventory.domain.stock.enums.TransactionType;
+import com.inventory.core.common.PageResponse;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -54,9 +47,8 @@ public class StockController {
 
 	@Operation(summary = "입출고 이력 조회")
 	@GetMapping("/transactions")
-	public ResponseEntity<ApiResponse<Page<StockTransactionResponse>>> getTransactions(
+	public ResponseEntity<PageResponse<StockTransactionResponse>> getTransactions(
 		@Valid @ModelAttribute TransactionSearchRequest searchRequest) {
-		Page<StockTransactionResponse> response = stockService.getTransactions(searchRequest.getProductId(), searchRequest.getType(), searchRequest.toPageable());
-		return ResponseEntity.ok(ApiResponse.ok(response));
+		return ResponseEntity.ok(new PageResponse<>(stockService.getTransactions(searchRequest.getProductId(), searchRequest.getType(), searchRequest.toPageable())));
 	}
 }

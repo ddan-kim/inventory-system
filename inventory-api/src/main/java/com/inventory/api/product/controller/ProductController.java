@@ -15,6 +15,7 @@ import com.inventory.api.product.dto.request.ProductSearchRequest;
 import com.inventory.api.product.dto.response.ProductResponse;
 import com.inventory.api.product.service.ProductService;
 import com.inventory.core.common.ApiResponse;
+import com.inventory.core.common.PageResponse;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -36,7 +37,7 @@ public class ProductController {
 
 	@Operation(summary = "전체 상품 재고 목록 조회", description = "등록된 전체 상품의 재고 수량을 조회합니다.")
 	@GetMapping
-	public ResponseEntity<ApiResponse<Page<ProductResponse>>> getAllProducts(@ModelAttribute ProductSearchRequest searchRequest) {
-		return ResponseEntity.ok(ApiResponse.ok(productService.getAllProducts(searchRequest.toPageable())));
+	public ResponseEntity<PageResponse<ProductResponse>> getAllProducts(@ModelAttribute ProductSearchRequest searchRequest) {
+		return ResponseEntity.ok(new PageResponse<>(productService.getAllProducts(searchRequest.toPageable())));
 	}
 }
