@@ -4,6 +4,7 @@ import com.inventory.core.common.ApiResponse;
 
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.dao.PessimisticLockingFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -37,6 +38,17 @@ public class GlobalExceptionHandler {
             .orElse("잘못된 입력값입니다.");
 
         return ResponseEntity.badRequest().body(ApiResponse.error(message));
+    }
+
+    /**
+     * 동시성 락 충돌
+     */
+    @ExceptionHandler(PessimisticLockingFailureException.class)
+    protected ResponseEntity<ApiResponse<Void>> handlePessimisticLockingFailure(PessimisticLockingFailureException e) {
+        log.warn("PessimisticLockingFailureException: {}", e.getMessage());
+        return ResponseEntity
+            .status(HttpStatus.CONFLICT)
+            .body(ApiResponse.error("다른 요청과 충돌이 발생했습니다. 잠시 후 다시 시도해 주세요."));
     }
 
     /**
